@@ -1,0 +1,1 @@
+A first implementation of an AI playing Chess in Python
