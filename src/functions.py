@@ -1,4 +1,4 @@
-from config import CASE_HEIGHT, CASE_WIDTH, NB_CASE_LINE
+from .config import CASE_HEIGHT, CASE_WIDTH, NB_CASE_LINE
 
 
 def coordinates_to_indexes(x, y):

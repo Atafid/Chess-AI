@@ -1,4 +1,4 @@
-from functions import coordinates_to_indexes, remove_chess_moves
+from .functions import coordinates_to_indexes, remove_chess_moves
 import random as rd
 
 

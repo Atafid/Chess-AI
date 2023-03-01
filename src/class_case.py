@@ -1,5 +1,5 @@
 import pygame as py
-from config import CASE_HEIGHT, CASE_WIDTH, SELECTION_COLOR
+from .config import CASE_HEIGHT, CASE_WIDTH, SELECTION_COLOR
 
 
 class Case:

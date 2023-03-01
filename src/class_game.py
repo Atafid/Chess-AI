@@ -1,9 +1,9 @@
 import pygame as py
-from config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH
-from functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves
-from class_player import Player
-from class_case import Case
-from class_pieces import Pawn, Tower, Knight, Bishop, Queen, King
+from .config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH
+from .functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves
+from .class_player import Player
+from .class_case import Case
+from .class_pieces import Pawn, Tower, Knight, Bishop, Queen, King
 from random import randint
 
 

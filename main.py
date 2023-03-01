@@ -1,7 +1,7 @@
 import pygame as py
 import numpy as np
-from config import WINDOW_HEIGHT, WINDOW_WIDTH, BACKGROUND_COLOR
-from class_game import Game
+from src.config import WINDOW_HEIGHT, WINDOW_WIDTH, BACKGROUND_COLOR
+from src.class_game import Game
 
 py.init()
 

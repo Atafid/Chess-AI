@@ -1,6 +1,6 @@
 import pygame as py
-from config import NB_CASE_LINE, IMAGE_HEIGHT, IMAGE_WIDTH
-from functions import coordinates_to_indexes, remove_unvalide_coordinates, copy_case_chessboard, check_controlled_case
+from .config import NB_CASE_LINE, IMAGE_HEIGHT, IMAGE_WIDTH
+from .functions import coordinates_to_indexes, remove_unvalide_coordinates, copy_case_chessboard, check_controlled_case
 
 
 class Piece:
