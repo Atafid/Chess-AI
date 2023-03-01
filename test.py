@@ -1,9 +1,9 @@
 import pygame as py
-from class_case import *
-from class_pieces import *
-from class_player import *
-from config import *
-from functions import *
+from src.class_case import *
+from src.class_pieces import *
+from src.class_player import *
+from src.config import *
+from src.functions import *
 
 py.init()
 
@@ -36,12 +36,13 @@ quit = False
 
 i = 3
 
-if (1 == 1):
-    if (i == 3):
-        print("ok")
+anim_piece = False
+anim_compt = 0
 
-    if (2 == 2):
-        print("test")
+points = []
+y_points = []
+
+pressed = False
 
 
 def construct_chessboard():
@@ -69,8 +70,21 @@ chessboard[0][5].piece = Knight("white", chessboard[0][5], player)
 def animation(piece, new_case):
     i, j = coordinates_to_indexes(piece.x, piece.y)
     i_case, j_case = coordinates_to_indexes(new_case.x, new_case.y)
-    
-    
+
+    alpha = (new_case.y - piece.y)/(new_case.x - piece.x)
+    beta = piece.y-alpha*piece.x
+
+    nb_points = 1000
+    interv = abs(piece.x-new_case.x)
+
+    begin_point = min(piece.x, new_case.x)
+    h = interv/nb_points
+
+    x_points = [piece.x+((-1)**(piece.x-new_case.x > 0))
+                * h*i for i in range(nb_points+1)]
+    y_points = [alpha*x+beta for x in x_points]
+
+    return ((x_points, y_points))
 
 
 while (not (quit)):
@@ -80,11 +94,37 @@ while (not (quit)):
         if (e.type == py.QUIT):
             quit = True
 
+    if (py.key.get_pressed()[py.K_SPACE] and not (pressed)):
+        anim_piece = True
+
+        points, y_points = animation(chessboard[0][5].piece, chessboard[2][4])
+        pressed = True
+
+    if (anim_piece):
+        chessboard[0][5].piece.x = points[anim_compt]
+        chessboard[0][5].piece.y = y_points[anim_compt]
+
+        anim_compt += 1
+
+        if (anim_compt > 1000):
+            anim_piece = False
+            anim_compt = 0
+
+            chessboard[0][5].piece.case = chessboard[2][4]
+            chessboard[2][4].piece = chessboard[0][5].piece
+
+            chessboard[0][5].piece = None
+
+    piece_to_disp = []
+
     for row in chessboard:
         for case in row:
             piece = case.display(screen)
 
             if (piece != None):
-                screen.blit(piece.app, (piece.x, piece.y))
+                piece_to_disp.append(piece)
+
+    for piece in piece_to_disp:
+        screen.blit(piece.app, (piece.x, piece.y))
 
     py.display.update()

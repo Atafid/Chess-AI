@@ -50,6 +50,7 @@ class Player():
     def choose_move(self, chessboard, players):
         king_i, king_j = coordinates_to_indexes(
             self.pieces["king"][0].x, self.pieces["king"][0].y)
+
         real_possible_moves = remove_chess_moves(
             self.move_list, chessboard, king_i, king_j, players)
 

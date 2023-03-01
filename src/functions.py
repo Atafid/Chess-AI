@@ -1,4 +1,4 @@
-from .config import CASE_HEIGHT, CASE_WIDTH, NB_CASE_LINE
+from .config import CASE_HEIGHT, CASE_WIDTH, NB_CASE_LINE, NB_POINTS_ANIMATION
 
 
 def coordinates_to_indexes(x, y):
@@ -63,12 +63,9 @@ def check_controlled_case(chessboard, players):
 def remove_chess_moves(moves, chessboard, king_i, king_j, players):
     real_possible_moves = []
 
-    # to reinitialize their movements after we change it in the following for loop
-    for player in players:
-        player.get_possible_movements(chessboard)
-
     # k, l are the coordinates of the case to move on and i, j the coordinates of the case where the piece comes from
     for k, l, i, j in moves:
+
         copy_chessboard, copy_pieces = copy_case_chessboard(chessboard)
 
         if (copy_chessboard[k][l].piece != None):
@@ -91,4 +88,29 @@ def remove_chess_moves(moves, chessboard, king_i, king_j, players):
             if (not (chessboard[king_i][king_j].piece.check_chess(copy_chessboard))):
                 real_possible_moves.append((k, l, i, j))
 
+    # to reinitialize their movements after we change it in the following for loop
+    for player in players:
+        player.get_possible_movements(chessboard)
+
     return (real_possible_moves)
+
+
+def animation(piece, new_case):
+    if (new_case.x - piece.x != 0):
+        alpha = (new_case.y - piece.y)/(new_case.x - piece.x)
+        beta = piece.y-alpha*piece.x
+
+        h = abs(piece.x-new_case.x)/NB_POINTS_ANIMATION
+
+        x_points = [piece.x+((-1)**(piece.x-new_case.x > 0))
+                    * h*i for i in range(NB_POINTS_ANIMATION+1)]
+        y_points = [alpha*x+beta for x in x_points]
+
+    else:
+        h = abs(piece.y-new_case.y)/NB_POINTS_ANIMATION
+
+        x_points = [piece.x for i in range(NB_POINTS_ANIMATION+1)]
+        y_points = [piece.y+((-1)**(piece.y-new_case.y > 0))
+                    * h*i for i in range(NB_POINTS_ANIMATION+1)]
+
+    return ((x_points, y_points))
