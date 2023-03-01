@@ -80,11 +80,11 @@ def animation(piece, new_case):
     begin_point = min(piece.x, new_case.x)
     h = interv/nb_points
 
-    points = [piece.x+((-1)**(piece.x-new_case.x > 0))
-              * h*i for i in range(nb_points+1)]
-    y_points = [alpha*x+beta for x in points]
+    x_points = [piece.x+((-1)**(piece.x-new_case.x > 0))
+                * h*i for i in range(nb_points+1)]
+    y_points = [alpha*x+beta for x in x_points]
 
-    return ((points, y_points))
+    return ((x_points, y_points))
 
 
 while (not (quit)):

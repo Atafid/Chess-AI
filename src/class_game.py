@@ -1,6 +1,6 @@
 import pygame as py
-from .config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH
-from .functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves
+from .config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH, NB_POINTS_ANIMATION
+from .functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves, animation
 from .class_player import Player
 from .class_case import Case
 from .class_pieces import Pawn, Tower, Knight, Bishop, Queen, King
@@ -36,6 +36,11 @@ class Game:
         self.end = False
 
         self.promoting = False
+
+        self.animation = False
+        self.animation_count = 0
+        self.animated_piece = None
+        self.animation_points = []
 
     def init_chessboard(self):
         colors = [WHITE, BLACK]
@@ -335,7 +340,11 @@ class Game:
         i, j, k, l = self.actual_player.choose_move(
             self.chessboard, self.players)
 
-        self.move_piece(self.chessboard[k][l].piece, self.chessboard[i][j])
+        self.animation = True
+        self.animated_piece = self.chessboard[k][l].piece
+
+        self.animation_points = animation(
+            self.chessboard[k][l].piece, self.chessboard[i][j])
 
     def update(self, keys):
         self.display()
@@ -348,7 +357,24 @@ class Game:
             self.handle_mouse()
 
         else:
-            self.handle_ia()
+            if (self.animation):
+                self.animated_piece.x = self.animation_points[0][self.animation_count]
+                self.animated_piece.y = self.animation_points[1][self.animation_count]
+
+                self.animation_count += 1
+
+                if (self.animation_count > NB_POINTS_ANIMATION):
+                    self.animation = False
+                    self.animation_count = 0
+
+                    i, j = coordinates_to_indexes(
+                        self.animation_points[0][NB_POINTS_ANIMATION], self.animation_points[1][NB_POINTS_ANIMATION])
+
+                    self.move_piece(
+                        self.animated_piece, self.chessboard[i][j])
+
+            else:
+                self.handle_ia()
 
         return (self.end)
 
