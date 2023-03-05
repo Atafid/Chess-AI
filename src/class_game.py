@@ -1,5 +1,5 @@
 import pygame as py
-from .config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH, NB_POINTS_ANIMATION
+from .config import WINDOW_WIDTH, KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH, NB_POINTS_ANIMATION
 from .functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves, animation
 from .class_player import Player
 from .class_case import Case
@@ -56,29 +56,29 @@ class Game:
                 new_case = Case(j*CASE_WIDTH, i*CASE_HEIGHT, colors[(i+j) % 2])
 
                 if (i == 0):
-                    if (j == 0 or j == NB_CASE_LINE-1):
-                        new_case.piece = Tower(
-                            self.players[1-low_player].color, new_case, self.players[1-low_player])
-                        self.players[1 -
-                                     low_player].pieces["tower"] += [new_case.piece]
+                    # if (j == 0 or j == NB_CASE_LINE-1):
+                    #     new_case.piece = Tower(
+                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
+                    #     self.players[1 -
+                    #                  low_player].pieces["tower"] += [new_case.piece]
 
-                    if (j == 1 or j == NB_CASE_LINE-2):
-                        new_case.piece = Knight(
-                            self.players[1-low_player].color, new_case, self.players[1-low_player])
-                        self.players[1 -
-                                     low_player].pieces["knight"] += [new_case.piece]
+                    # if (j == 1 or j == NB_CASE_LINE-2):
+                    #     new_case.piece = Knight(
+                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
+                    #     self.players[1 -
+                    #                  low_player].pieces["knight"] += [new_case.piece]
 
-                    if (j == 2 or j == NB_CASE_LINE-3):
-                        new_case.piece = Bishop(
-                            self.players[1-low_player].color, new_case, self.players[1-low_player])
-                        self.players[1 -
-                                     low_player].pieces["bishop"] += [new_case.piece]
+                    # if (j == 2 or j == NB_CASE_LINE-3):
+                    #     new_case.piece = Bishop(
+                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
+                    #     self.players[1 -
+                    #                  low_player].pieces["bishop"] += [new_case.piece]
 
-                    if (j == 3):
-                        new_case.piece = Queen(
-                            self.players[1-low_player].color, new_case, self.players[1-low_player])
-                        self.players[1 -
-                                     low_player].pieces["queen"] += [new_case.piece]
+                    # if (j == 3):
+                    #     new_case.piece = Queen(
+                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
+                    #     self.players[1 -
+                    #                  low_player].pieces["queen"] += [new_case.piece]
 
                     if (j == NB_CASE_LINE-4):
                         new_case.piece = King(
@@ -112,11 +112,11 @@ class Game:
                             self.players[low_player].color, new_case, self.players[low_player])
                         self.players[low_player].pieces["king"] += [new_case.piece]
 
-                if (i == 1):
-                    new_case.piece = Pawn(
-                        self.players[1-low_player].color, new_case, self.players[1-low_player], False)
-                    self.players[1 -
-                                 low_player].pieces["pawn"] += [new_case.piece]
+                # if (i == 1):
+                    # new_case.piece = Pawn(
+                    #     self.players[1-low_player].color, new_case, self.players[1-low_player], False)
+                    # self.players[1 -
+                    #              low_player].pieces["pawn"] += [new_case.piece]
 
                 if (i == NB_CASE_LINE-2):
                     new_case.piece = Pawn(
@@ -241,7 +241,7 @@ class Game:
 
         for i in range(4):
             self.promote_case.append(
-                py.Rect((pawn.x+i*PROMOTE_CASE_WIDTH, pawn.y+PROMOTE_CASE_HEIGHT), (PROMOTE_CASE_WIDTH, PROMOTE_CASE_HEIGHT)))
+                py.Rect((pawn.x+((-1)**(int(pawn.x >= WINDOW_WIDTH/2)))*i*PROMOTE_CASE_WIDTH, pawn.y+PROMOTE_CASE_HEIGHT), (PROMOTE_CASE_WIDTH, PROMOTE_CASE_HEIGHT)))
 
         self.promoting = True
 

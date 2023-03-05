@@ -1,4 +1,4 @@
-from .functions import coordinates_to_indexes, remove_chess_moves
+from .functions import coordinates_to_indexes, remove_chess_moves, second_element
 import random as rd
 
 
@@ -52,8 +52,24 @@ class Player():
             self.pieces["king"][0].x, self.pieces["king"][0].y)
 
         real_possible_moves = remove_chess_moves(
-            self.move_list, chessboard, king_i, king_j, players)
+            self.move_list, chessboard, king_i, king_j, players, evaluate=True)
 
-        move = rd.randint(0, len(real_possible_moves)-1)
+        real_possible_moves.sort(key=second_element)
 
-        return (real_possible_moves[move])
+        if (len(real_possible_moves) >= 2 and real_possible_moves[-1][1] == real_possible_moves[-2][1]):
+            first_index_max_value = 0
+
+            for m, e in real_possible_moves:
+                if (e == real_possible_moves[-1][1]):
+                    break
+
+                else:
+                    first_index_max_value += 1
+
+            move = rd.randint(first_index_max_value,
+                              len(real_possible_moves)-1)
+
+        else:
+            move = -1
+
+        return (real_possible_moves[move][0])

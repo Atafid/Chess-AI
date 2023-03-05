@@ -60,7 +60,7 @@ def check_controlled_case(chessboard, players):
                 chessboard[i][j].controlled.append(players[1].color)
 
 
-def remove_chess_moves(moves, chessboard, king_i, king_j, players):
+def remove_chess_moves(moves, chessboard, king_i, king_j, players, evaluate=False):
     real_possible_moves = []
 
     # k, l are the coordinates of the case to move on and i, j the coordinates of the case where the piece comes from
@@ -82,17 +82,29 @@ def remove_chess_moves(moves, chessboard, king_i, king_j, players):
 
         if ((king_i, king_j) == (i, j)):
             if (not (copy_chessboard[k][l].piece.check_chess(copy_chessboard))):
-                real_possible_moves.append((k, l, i, j))
+                if (evaluate):
+                    real_possible_moves.append(((k, l, i, j), evaluation(
+                        copy_chessboard, copy_chessboard[k][l].color)))
+                else:
+                    real_possible_moves.append((k, l, i, j))
 
         else:
             if (not (chessboard[king_i][king_j].piece.check_chess(copy_chessboard))):
-                real_possible_moves.append((k, l, i, j))
+                if (evaluate):
+                    real_possible_moves.append(((k, l, i, j), evaluation(
+                        copy_chessboard, copy_chessboard[k][l].color)))
+                else:
+                    real_possible_moves.append((k, l, i, j))
 
     # to reinitialize their movements after we change it in the following for loop
     for player in players:
         player.get_possible_movements(chessboard)
 
     return (real_possible_moves)
+
+
+def minmax(depth):
+    pass
 
 
 def animation(piece, new_case):
@@ -114,3 +126,19 @@ def animation(piece, new_case):
                     * h*i for i in range(NB_POINTS_ANIMATION+1)]
 
     return ((x_points, y_points))
+
+
+def evaluation(chessboard, color):
+    eva = 0
+
+    for line in chessboard:
+        for case in line:
+            if (case.piece != None):
+                eva += case.piece.value * \
+                    ((-1)**(int(case.piece.color != color)))
+
+    return (eva)
+
+
+def second_element(couple):
+    return (couple[1])

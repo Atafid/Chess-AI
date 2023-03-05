@@ -33,6 +33,7 @@ class Pawn(Piece):
     def __init__(self, color, case, player, low):
         self.type = "pawn"
         self.low = low
+        self.value = 10
         super().__init__(color, case, player)
 
     def copy(self):
@@ -79,6 +80,7 @@ class Pawn(Piece):
 class Tower(Piece):
     def __init__(self, color, case, player):
         self.type = 'tower'
+        self.value = 50
         super().__init__(color, case, player)
 
     def copy(self):
@@ -128,6 +130,7 @@ class Tower(Piece):
 class Knight(Piece):
     def __init__(self, color, case, player):
         self.type = 'knight'
+        self.value = 30
         super().__init__(color, case, player)
 
     def copy(self):
@@ -151,6 +154,7 @@ class Knight(Piece):
 class Bishop(Piece):
     def __init__(self, color, case, player):
         self.type = "bishop"
+        self.value = 30
         super().__init__(color, case, player)
 
     def copy(self):
@@ -200,6 +204,7 @@ class Bishop(Piece):
 class Queen(Piece):
     def __init__(self, color, case, player):
         self.type = "queen"
+        self.value = 90
         super().__init__(color, case, player)
 
     def copy(self):
@@ -219,6 +224,7 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, color, case, player):
         self.type = "king"
+        self.value = 900
         super().__init__(color, case, player)
 
     def copy(self):
