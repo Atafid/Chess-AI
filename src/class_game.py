@@ -47,7 +47,7 @@ class Game:
         chessboard = []
 
         low_player = randint(0, 1)
-        self.players[1-low_player].ia = True
+        self.players[1-low_player].ia = False
 
         for i in range(NB_CASE_LINE):
             line = []
@@ -56,29 +56,29 @@ class Game:
                 new_case = Case(j*CASE_WIDTH, i*CASE_HEIGHT, colors[(i+j) % 2])
 
                 if (i == 0):
-                    # if (j == 0 or j == NB_CASE_LINE-1):
-                    #     new_case.piece = Tower(
-                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
-                    #     self.players[1 -
-                    #                  low_player].pieces["tower"] += [new_case.piece]
+                    if (j == 0 or j == NB_CASE_LINE-1):
+                        new_case.piece = Tower(
+                            self.players[1-low_player].color, new_case, self.players[1-low_player])
+                        self.players[1 -
+                                     low_player].pieces["tower"] += [new_case.piece]
 
-                    # if (j == 1 or j == NB_CASE_LINE-2):
-                    #     new_case.piece = Knight(
-                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
-                    #     self.players[1 -
-                    #                  low_player].pieces["knight"] += [new_case.piece]
+                    if (j == 1 or j == NB_CASE_LINE-2):
+                        new_case.piece = Knight(
+                            self.players[1-low_player].color, new_case, self.players[1-low_player])
+                        self.players[1 -
+                                     low_player].pieces["knight"] += [new_case.piece]
 
-                    # if (j == 2 or j == NB_CASE_LINE-3):
-                    #     new_case.piece = Bishop(
-                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
-                    #     self.players[1 -
-                    #                  low_player].pieces["bishop"] += [new_case.piece]
+                    if (j == 2 or j == NB_CASE_LINE-3):
+                        new_case.piece = Bishop(
+                            self.players[1-low_player].color, new_case, self.players[1-low_player])
+                        self.players[1 -
+                                     low_player].pieces["bishop"] += [new_case.piece]
 
-                    # if (j == 3):
-                    #     new_case.piece = Queen(
-                    #         self.players[1-low_player].color, new_case, self.players[1-low_player])
-                    #     self.players[1 -
-                    #                  low_player].pieces["queen"] += [new_case.piece]
+                    if (j == 3):
+                        new_case.piece = Queen(
+                            self.players[1-low_player].color, new_case, self.players[1-low_player])
+                        self.players[1 -
+                                     low_player].pieces["queen"] += [new_case.piece]
 
                     if (j == NB_CASE_LINE-4):
                         new_case.piece = King(
@@ -112,11 +112,11 @@ class Game:
                             self.players[low_player].color, new_case, self.players[low_player])
                         self.players[low_player].pieces["king"] += [new_case.piece]
 
-                # if (i == 1):
-                    # new_case.piece = Pawn(
-                    #     self.players[1-low_player].color, new_case, self.players[1-low_player], False)
-                    # self.players[1 -
-                    #              low_player].pieces["pawn"] += [new_case.piece]
+                if (i == 1):
+                    new_case.piece = Pawn(
+                        self.players[1-low_player].color, new_case, self.players[1-low_player], False)
+                    self.players[1 -
+                                 low_player].pieces["pawn"] += [new_case.piece]
 
                 if (i == NB_CASE_LINE-2):
                     new_case.piece = Pawn(
@@ -200,8 +200,22 @@ class Game:
         selected_piece.set_new_case(case_to_move)
         selected_piece.first_move = False
 
-        if (selected_piece.type == "pawn" and (case_to_move.y == 0 or case_to_move.y == (NB_CASE_LINE-1)*CASE_HEIGHT)):
-            self.promote_pawn(selected_piece)
+        if (selected_piece.type == "pawn"):
+            if ((case_to_move.y == 0 or case_to_move.y == (NB_CASE_LINE-1)*CASE_HEIGHT)):
+                self.promote_pawn(selected_piece)
+
+            if (abs(i_case-i_piece) == 2):
+                if (j_case != 0 and self.chessboard[i_case][j_case-1].piece != None and self.chessboard[i_case][j_case-1].piece.type == 'pawn' and self.chessboard[i_case][j_case-1].piece.color != selected_piece.color):
+                    self.chessboard[i_case][j_case -
+                                            1].piece.en_passant = selected_piece
+
+                if (j_case != NB_CASE_LINE-1 and self.chessboard[i_case][j_case+1].piece != None and self.chessboard[i_case][j_case+1].piece.type == 'pawn' and self.chessboard[i_case][j_case+1].piece.color != selected_piece.color):
+                    self.chessboard[i_case][j_case +
+                                            1].piece.en_passant = selected_piece
+
+            if (selected_piece.en_passant != None and j_case == coordinates_to_indexes(selected_piece.en_passant.x, selected_piece.en_passant.y)[1]):
+                selected_piece.en_passant.is_on_board = False
+                selected_piece.en_passant = None
 
         if (selected_piece.type == "king"):
             if (j_case == j_piece-2):

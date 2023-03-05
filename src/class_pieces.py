@@ -33,6 +33,8 @@ class Pawn(Piece):
     def __init__(self, color, case, player, low):
         self.type = "pawn"
         self.low = low
+        self.en_passant = None
+
         self.value = 10
         super().__init__(color, case, player)
 
@@ -70,6 +72,11 @@ class Pawn(Piece):
 
             if (j != NB_CASE_LINE-1 and chessboard[i+1][j+1].piece != None):
                 possible_moves += [(i+1, j+1)]
+
+        if (self.en_passant != None):
+            i, j = coordinates_to_indexes(self.en_passant.x, self.en_passant.y)
+
+            possible_moves += [(i+((-1)**(int(not (self.en_passant.low)))), j)]
 
         possible_moves = remove_unvalide_coordinates(
             possible_moves, chessboard, self.color)
