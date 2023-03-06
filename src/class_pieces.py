@@ -33,6 +33,9 @@ class Pawn(Piece):
     def __init__(self, color, case, player, low):
         self.type = "pawn"
         self.low = low
+        self.en_passant = None
+
+        self.value = 10
         super().__init__(color, case, player)
 
     def copy(self):
@@ -70,6 +73,11 @@ class Pawn(Piece):
             if (j != NB_CASE_LINE-1 and chessboard[i+1][j+1].piece != None):
                 possible_moves += [(i+1, j+1)]
 
+        if (self.en_passant != None):
+            i, j = coordinates_to_indexes(self.en_passant.x, self.en_passant.y)
+
+            possible_moves += [(i+((-1)**(int(not (self.en_passant.low)))), j)]
+
         possible_moves = remove_unvalide_coordinates(
             possible_moves, chessboard, self.color)
 
@@ -79,6 +87,7 @@ class Pawn(Piece):
 class Tower(Piece):
     def __init__(self, color, case, player):
         self.type = 'tower'
+        self.value = 50
         super().__init__(color, case, player)
 
     def copy(self):
@@ -128,6 +137,7 @@ class Tower(Piece):
 class Knight(Piece):
     def __init__(self, color, case, player):
         self.type = 'knight'
+        self.value = 30
         super().__init__(color, case, player)
 
     def copy(self):
@@ -151,6 +161,7 @@ class Knight(Piece):
 class Bishop(Piece):
     def __init__(self, color, case, player):
         self.type = "bishop"
+        self.value = 30
         super().__init__(color, case, player)
 
     def copy(self):
@@ -200,6 +211,7 @@ class Bishop(Piece):
 class Queen(Piece):
     def __init__(self, color, case, player):
         self.type = "queen"
+        self.value = 90
         super().__init__(color, case, player)
 
     def copy(self):
@@ -219,6 +231,7 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, color, case, player):
         self.type = "king"
+        self.value = 900
         super().__init__(color, case, player)
 
     def copy(self):

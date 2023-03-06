@@ -1,5 +1,5 @@
 import pygame as py
-from .config import KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH, NB_POINTS_ANIMATION
+from .config import WINDOW_WIDTH, KEYBOARD_CONTROLL, WHITE, BLACK, NB_CASE_LINE, CASE_HEIGHT, CASE_WIDTH, POINT_MOVE_HEIGHT, POINT_MOVE_WIDTH, POSSIBLE_MOVE_COLOR, PROMOTE_CASE_HEIGHT, PROMOTE_CASE_WIDTH, NB_POINTS_ANIMATION
 from .functions import indexes_to_coordinates, coordinates_to_indexes, check_controlled_case, remove_chess_moves, animation
 from .class_player import Player
 from .class_case import Case
@@ -47,7 +47,7 @@ class Game:
         chessboard = []
 
         low_player = randint(0, 1)
-        self.players[1-low_player].ia = True
+        self.players[1-low_player].ia = False
 
         for i in range(NB_CASE_LINE):
             line = []
@@ -200,8 +200,22 @@ class Game:
         selected_piece.set_new_case(case_to_move)
         selected_piece.first_move = False
 
-        if (selected_piece.type == "pawn" and (case_to_move.y == 0 or case_to_move.y == (NB_CASE_LINE-1)*CASE_HEIGHT)):
-            self.promote_pawn(selected_piece)
+        if (selected_piece.type == "pawn"):
+            if ((case_to_move.y == 0 or case_to_move.y == (NB_CASE_LINE-1)*CASE_HEIGHT)):
+                self.promote_pawn(selected_piece)
+
+            if (abs(i_case-i_piece) == 2):
+                if (j_case != 0 and self.chessboard[i_case][j_case-1].piece != None and self.chessboard[i_case][j_case-1].piece.type == 'pawn' and self.chessboard[i_case][j_case-1].piece.color != selected_piece.color):
+                    self.chessboard[i_case][j_case -
+                                            1].piece.en_passant = selected_piece
+
+                if (j_case != NB_CASE_LINE-1 and self.chessboard[i_case][j_case+1].piece != None and self.chessboard[i_case][j_case+1].piece.type == 'pawn' and self.chessboard[i_case][j_case+1].piece.color != selected_piece.color):
+                    self.chessboard[i_case][j_case +
+                                            1].piece.en_passant = selected_piece
+
+            if (selected_piece.en_passant != None and j_case == coordinates_to_indexes(selected_piece.en_passant.x, selected_piece.en_passant.y)[1]):
+                selected_piece.en_passant.is_on_board = False
+                selected_piece.en_passant = None
 
         if (selected_piece.type == "king"):
             if (j_case == j_piece-2):
@@ -241,7 +255,7 @@ class Game:
 
         for i in range(4):
             self.promote_case.append(
-                py.Rect((pawn.x+i*PROMOTE_CASE_WIDTH, pawn.y+PROMOTE_CASE_HEIGHT), (PROMOTE_CASE_WIDTH, PROMOTE_CASE_HEIGHT)))
+                py.Rect((pawn.x+((-1)**(int(pawn.x >= WINDOW_WIDTH/2)))*i*PROMOTE_CASE_WIDTH, pawn.y+PROMOTE_CASE_HEIGHT), (PROMOTE_CASE_WIDTH, PROMOTE_CASE_HEIGHT)))
 
         self.promoting = True
 

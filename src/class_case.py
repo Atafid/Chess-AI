@@ -38,5 +38,5 @@ class Case:
         else:
             py.draw.rect(window, SELECTION_COLOR, self.app)
 
-        if (self.piece != None):
+        if (self.piece != None and self.piece.is_on_board):
             return (self.piece)
