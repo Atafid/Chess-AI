@@ -5,6 +5,7 @@ from .class_player import Player
 from .class_case import Case
 from .class_pieces import Pawn, Tower, Knight, Bishop, Queen, King
 from random import randint
+from .minmax import minMaxTree
 
 
 class Game:
@@ -47,7 +48,7 @@ class Game:
         chessboard = []
 
         low_player = randint(0, 1)
-        self.players[1-low_player].ia = False
+        self.players[1-low_player].ia = True
 
         for i in range(NB_CASE_LINE):
             line = []
@@ -130,9 +131,8 @@ class Game:
         return (chessboard)
 
     def update_moves(self):
-        for player in self.players:
-            player.get_possible_movements(self.chessboard)
-        check_controlled_case(self.chessboard, self.players)
+        check_controlled_case(self.chessboard, self.players[0].get_possible_movements(self.chessboard), self.players[0].color,
+                              self.players[1].get_possible_movements(self.chessboard), self.players[1].color)
 
     def set_selected_case(self, i, j):
         self.selected_case.selected = False
@@ -351,26 +351,24 @@ class Game:
                     self.selected_piece.y = self.selected_piece.case.y
 
     def handle_ia(self):
-        i, j, k, l = self.actual_player.choose_move(
-            self.chessboard, self.players)
+        # k, l, i, j = self.actual_player.choose_move(
+        #     self.chessboard, self.players)
+
+        k, l, i, j = minMaxTree(self.players, self.turn,
+                                self.chessboard).get_best_move()
 
         self.animation = True
-        self.animated_piece = self.chessboard[k][l].piece
+        self.animated_piece = self.chessboard[i][j].piece
 
         self.animation_points = animation(
-            self.chessboard[k][l].piece, self.chessboard[i][j])
+            self.chessboard[i][j].piece, self.chessboard[k][l])
 
     def update(self, keys):
         self.display()
 
         self.actual_player = self.players[self.turn % 2]
 
-        if (not (self.actual_player.ia)):
-            if (KEYBOARD_CONTROLL):
-                self.handle_keyboard(keys)
-            self.handle_mouse()
-
-        else:
+        if (self.actual_player.ia):
             if (self.animation):
                 self.animated_piece.x = self.animation_points[0][self.animation_count]
                 self.animated_piece.y = self.animation_points[1][self.animation_count]
@@ -389,6 +387,11 @@ class Game:
 
             else:
                 self.handle_ia()
+
+        else:
+            if (KEYBOARD_CONTROLL):
+                self.handle_keyboard(keys)
+            self.handle_mouse()
 
         return (self.end)
 

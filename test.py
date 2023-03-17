@@ -4,6 +4,8 @@ from src.class_pieces import *
 from src.class_player import *
 from src.config import *
 from src.functions import *
+from src.minmax import *
+from random import randint
 
 py.init()
 
@@ -45,26 +47,110 @@ y_points = []
 pressed = False
 
 
-def construct_chessboard():
+def construct_chessboard(players):
     colors = [WHITE, BLACK]
     chessboard = []
 
-    for i in range(8):
-        row = []
+    low_player = randint(0, 1)
+    players[1-low_player].ia = False
 
-        for j in range(8):
+    for i in range(NB_CASE_LINE):
+        line = []
+
+        for j in range(NB_CASE_LINE):
             new_case = Case(j*CASE_WIDTH, i*CASE_HEIGHT, colors[(i+j) % 2])
-            row.append(new_case)
 
-        chessboard.append(row)
+            if (i == 0):
+                if (j == 0 or j == NB_CASE_LINE-1):
+                    new_case.piece = Tower(
+                        players[1-low_player].color, new_case, players[1-low_player])
+                    players[1 -
+                            low_player].pieces["tower"] += [new_case.piece]
+
+                if (j == 1 or j == NB_CASE_LINE-2):
+                    new_case.piece = Knight(
+                        players[1-low_player].color, new_case, players[1-low_player])
+                    players[1 -
+                            low_player].pieces["knight"] += [new_case.piece]
+
+                if (j == 2 or j == NB_CASE_LINE-3):
+                    new_case.piece = Bishop(
+                        players[1-low_player].color, new_case, players[1-low_player])
+                    players[1 -
+                            low_player].pieces["bishop"] += [new_case.piece]
+
+                if (j == 3):
+                    new_case.piece = Queen(
+                        players[1-low_player].color, new_case, players[1-low_player])
+                    players[1 -
+                            low_player].pieces["queen"] += [new_case.piece]
+
+                if (j == NB_CASE_LINE-4):
+                    new_case.piece = King(
+                        players[1-low_player].color, new_case, players[1-low_player])
+                    players[1 -
+                            low_player].pieces["king"] += [new_case.piece]
+
+            if (i == NB_CASE_LINE-1):
+                if (j == 0 or j == NB_CASE_LINE-1):
+                    new_case.piece = Tower(
+                        players[low_player].color, new_case, players[low_player])
+                    players[low_player].pieces["tower"] += [new_case.piece]
+
+                if (j == 1 or j == NB_CASE_LINE-2):
+                    new_case.piece = Knight(
+                        players[low_player].color, new_case, players[low_player])
+                    players[low_player].pieces["knight"] += [new_case.piece]
+
+                if (j == 2 or j == NB_CASE_LINE-3):
+                    new_case.piece = Bishop(
+                        players[low_player].color, new_case, players[low_player])
+                    players[low_player].pieces["bishop"] += [new_case.piece]
+
+                if (j == 3):
+                    new_case.piece = Queen(
+                        players[low_player].color, new_case, players[low_player])
+                    players[low_player].pieces["queen"] += [new_case.piece]
+
+                if (j == NB_CASE_LINE-4):
+                    new_case.piece = King(
+                        players[low_player].color, new_case, players[low_player])
+                    players[low_player].pieces["king"] += [new_case.piece]
+
+            if (i == 1):
+                new_case.piece = Pawn(
+                    players[1-low_player].color, new_case, players[1-low_player], False)
+                players[1 -
+                        low_player].pieces["pawn"] += [new_case.piece]
+
+            if (i == NB_CASE_LINE-2):
+                new_case.piece = Pawn(
+                    players[low_player].color, new_case, players[low_player], True)
+                players[low_player].pieces["pawn"] += [new_case.piece]
+
+            line.append(new_case)
+
+        chessboard.append(line)
 
     return (chessboard)
 
 
-chessboard = construct_chessboard()
 player = Player("white", False)
+playerTwo = Player("black", False)
 
-chessboard[0][5].piece = Knight("white", chessboard[0][5], player)
+players = [player, playerTwo]
+
+chessboard = construct_chessboard(players)
+
+check_controlled_case(chessboard, players[0].get_possible_movements(chessboard), players[0].color,
+                      players[1].get_possible_movements(chessboard), players[1].color)
+test = minMaxTree([player, playerTwo], 0, chessboard)
+
+k, l, i, j = test.get_best_move()
+chessboard[k][l].piece = chessboard[i][j].piece
+chessboard[i][j].piece = None
+
+chessboard[k][l].piece.set_new_case(chessboard[k][l])
 
 
 def animation(piece, new_case):
