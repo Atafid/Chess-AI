@@ -48,16 +48,16 @@ def case_in_possible_moves_list(i, j, list):
     return (False)
 
 
-def check_controlled_case(chessboard, players):
+def check_controlled_case(chessboard, playerOneMoves, playerOneColor, playerTwoMoves, playerTwoColor):
     for i in range(NB_CASE_LINE):
         for j in range(NB_CASE_LINE):
             chessboard[i][j].controlled = []
 
-            if (case_in_possible_moves_list(i, j, players[0].move_list)):
-                chessboard[i][j].controlled.append(players[0].color)
+            if (case_in_possible_moves_list(i, j, playerOneMoves)):
+                chessboard[i][j].controlled.append(playerOneColor)
 
-            elif (case_in_possible_moves_list(i, j, players[1].move_list)):
-                chessboard[i][j].controlled.append(players[1].color)
+            elif (case_in_possible_moves_list(i, j, playerTwoMoves)):
+                chessboard[i][j].controlled.append(playerTwoColor)
 
 
 def remove_chess_moves(moves, chessboard, king_i, king_j, players, evaluate=False):
@@ -76,15 +76,14 @@ def remove_chess_moves(moves, chessboard, king_i, king_j, players, evaluate=Fals
 
         copy_chessboard[i][j].piece = None
 
-        for player in players:
-            player.get_possible_movements(copy_chessboard, copy_pieces)
-        check_controlled_case(copy_chessboard, players)
+        check_controlled_case(copy_chessboard, players[0].get_possible_movements(copy_chessboard, copy_pieces), players[0].color,
+                              players[1].get_possible_movements(copy_chessboard, copy_pieces), players[1].color)
 
         if ((king_i, king_j) == (i, j)):
             if (not (copy_chessboard[k][l].piece.check_chess(copy_chessboard))):
                 if (evaluate):
                     real_possible_moves.append(((k, l, i, j), evaluation(
-                        copy_chessboard, copy_chessboard[k][l].color)))
+                        copy_chessboard)))
                 else:
                     real_possible_moves.append((k, l, i, j))
 
@@ -92,19 +91,11 @@ def remove_chess_moves(moves, chessboard, king_i, king_j, players, evaluate=Fals
             if (not (chessboard[king_i][king_j].piece.check_chess(copy_chessboard))):
                 if (evaluate):
                     real_possible_moves.append(((k, l, i, j), evaluation(
-                        copy_chessboard, copy_chessboard[k][l].color)))
+                        copy_chessboard)))
                 else:
                     real_possible_moves.append((k, l, i, j))
 
-    # to reinitialize their movements after we change it in the following for loop
-    for player in players:
-        player.get_possible_movements(chessboard)
-
     return (real_possible_moves)
-
-
-def minmax(depth):
-    pass
 
 
 def animation(piece, new_case):
@@ -128,17 +119,27 @@ def animation(piece, new_case):
     return ((x_points, y_points))
 
 
-def evaluation(chessboard, color):
+def evaluation(chessboard):
     eva = 0
 
     for line in chessboard:
         for case in line:
             if (case.piece != None):
                 eva += case.piece.value * \
-                    ((-1)**(int(case.piece.color != color)))
+                    ((-1)**(int(case.piece.color != "white")))
 
     return (eva)
 
 
 def second_element(couple):
     return (couple[1])
+
+
+def flat_list_of_list(l):
+    r = []
+
+    for list in l:
+        for a in list:
+            r.append(a)
+
+    return (r)

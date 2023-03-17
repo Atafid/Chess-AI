@@ -10,13 +10,18 @@ class Player():
                        "knight": [], "bishop": [], "queen": [], "king": []}
 
         self.chess = False
-
-        self.move_list = []
         self.ia = ia
 
+    def check_chess_mate(self, chessboard, players):
+        king_i, king_j = coordinates_to_indexes(
+            self.pieces["king"][0].x, self.pieces["king"][0].y)
+
+        return (self.chess and remove_chess_moves(self.get_possible_movements(chessboard), chessboard, king_i, king_j, players) == [])
+
     def get_possible_movements(self, chessboard, copy_piece=None):
+        move_list = []
+
         if (copy_piece != None):
-            self.move_list = []
 
             for piece in copy_piece:
                 if (piece.color == self.color and piece.is_on_board):
@@ -25,11 +30,9 @@ class Player():
                     i, j = coordinates_to_indexes(piece.x, piece.y)
                     for (k, l) in piece.possible_movements(chessboard):
                         piece.movements.append((k, l, i, j))
-                        self.move_list.append((k, l, i, j))
+                        move_list.append((k, l, i, j))
 
         else:
-            self.move_list = []
-
             for list_piece in self.pieces.values():
                 for piece in list_piece:
                     piece.movements = []
@@ -39,22 +42,27 @@ class Player():
 
                         for (k, l) in piece.possible_movements(chessboard):
                             piece.movements.append((k, l, i, j))
-                            self.move_list.append((k, l, i, j))
+                            move_list.append((k, l, i, j))
 
-    def check_chess_mate(self, chessboard, players):
-        king_i, king_j = coordinates_to_indexes(
-            self.pieces["king"][0].x, self.pieces["king"][0].y)
+        return (move_list)
 
-        return (self.chess and remove_chess_moves(self.move_list, chessboard, king_i, king_j, players) == [])
-
-    def choose_move(self, chessboard, players):
+    def get_valide_moves(self, chessboard, players, copy_piece=None, evaluate=False):
         king_i, king_j = coordinates_to_indexes(
             self.pieces["king"][0].x, self.pieces["king"][0].y)
 
         real_possible_moves = remove_chess_moves(
-            self.move_list, chessboard, king_i, king_j, players, evaluate=True)
+            self.get_possible_movements(chessboard, copy_piece=copy_piece), chessboard, king_i, king_j, players, evaluate=evaluate)
 
-        real_possible_moves.sort(key=second_element)
+        return (real_possible_moves)
+
+    def choose_move(self, chessboard, players):
+        real_possible_moves = self.get_valide_moves(
+            chessboard, players, copy_piece=None, evaluate=True)
+
+        if (self.color == "white"):
+            real_possible_moves.sort(key=second_element)
+        else:
+            real_possible_moves.sort(key=second_element, reverse=True)
 
         if (len(real_possible_moves) >= 2 and real_possible_moves[-1][1] == real_possible_moves[-2][1]):
             first_index_max_value = 0
