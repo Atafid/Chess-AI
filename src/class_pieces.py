@@ -1,6 +1,6 @@
 import pygame as py
 from .config import NB_CASE_LINE, IMAGE_HEIGHT, IMAGE_WIDTH
-from .functions import coordinates_to_indexes, remove_unvalide_coordinates, copy_case_chessboard, check_controlled_case
+from .functions import coordinates_to_indexes, remove_unvalide_coordinates, case_in_possible_moves_list
 
 
 class Piece:
@@ -35,7 +35,15 @@ class Pawn(Piece):
         self.low = low
         self.en_passant = None
 
-        self.value = 10
+        self.value = [[0,  0,  0,  0,  0,  0,  0,  0],
+                      [50, 50, 50, 50, 50, 50, 50, 50],
+                      [10, 10, 20, 30, 30, 20, 10, 10],
+                      [5,  5, 10, 25, 25, 10,  5,  5],
+                      [0,  0,  0, 20, 20,  0,  0,  0],
+                      [5, -5, -10,  0,  0, -10, -5,  5],
+                      [5, 10, 10, -20, -20, 10, 10,  5],
+                      [0,  0,  0,  0,  0,  0,  0,  0], ]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -87,7 +95,16 @@ class Pawn(Piece):
 class Tower(Piece):
     def __init__(self, color, case, player):
         self.type = 'tower'
-        self.value = 50
+
+        self.value = [[0,  0,  0,  0,  0,  0,  0,  0],
+                      [5, 10, 10, 10, 10, 10, 10,  5],
+                      [-5,  0,  0,  0,  0,  0,  0, -5],
+                      [-5,  0,  0,  0,  0,  0,  0, -5],
+                      [-5,  0,  0,  0,  0,  0,  0, -5],
+                      [-5,  0,  0,  0,  0,  0,  0, -5],
+                      [-5,  0,  0,  0,  0,  0,  0, -5],
+                      [0,  0,  0,  5,  5,  0,  0,  0], ]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -137,7 +154,16 @@ class Tower(Piece):
 class Knight(Piece):
     def __init__(self, color, case, player):
         self.type = 'knight'
-        self.value = 30
+
+        self.value = [[-50, -40, -30, -30, -30, -30, -40, -50],
+                      [-40, -20,  0,  0,  0,  0, -20, -40],
+                      [-30,  0, 10, 15, 15, 10,  0, -30],
+                      [-30,  5, 15, 20, 20, 15,  5, -30],
+                      [-30,  0, 15, 20, 20, 15,  0, -30],
+                      [-30,  5, 10, 15, 15, 10,  5, -30],
+                      [-40, -20,  0,  5,  5,  0, -20, -40],
+                      [-50, -40, -30, -30, -30, -30, -40, -50], ]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -161,7 +187,16 @@ class Knight(Piece):
 class Bishop(Piece):
     def __init__(self, color, case, player):
         self.type = "bishop"
-        self.value = 30
+
+        self.value = [[-20, -10, -10, -10, -10, -10, -10, -20],
+                      [-10,  0,  0,  0,  0,  0,  0, -10],
+                      [-10,  0,  5, 10, 10,  5,  0, -10],
+                      [-10,  5,  5, 10, 10,  5,  5, -10],
+                      [-10,  0, 10, 10, 10, 10,  0, -10],
+                      [-10, 10, 10, 10, 10, 10, 10, -10],
+                      [-10,  5,  0,  0,  0,  0,  5, -10],
+                      [-20, -10, -10, -10, -10, -10, -10, -20], ]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -211,7 +246,16 @@ class Bishop(Piece):
 class Queen(Piece):
     def __init__(self, color, case, player):
         self.type = "queen"
-        self.value = 90
+
+        self.value = [[-20, -10, -10, -5, -5, -10, -10, -20],
+                      [-10,  0,  0,  0,  0,  0,  0, -10],
+                      [-10,  0,  5,  5,  5,  5,  0, -10],
+                      [-5,  0,  5,  5,  5,  5,  0, -5],
+                      [0,  0,  5,  5,  5,  5,  0, -5],
+                      [-10,  5,  5,  5,  5,  5,  0, -10],
+                      [-10,  0,  5,  0,  0,  0,  0, -10],
+                      [-20, -10, -10, -5, -5, -10, -10, -20], ]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -231,7 +275,16 @@ class Queen(Piece):
 class King(Piece):
     def __init__(self, color, case, player):
         self.type = "king"
-        self.value = 900
+
+        self.value = [[-30, -40, -40, -50, -50, -40, -40, -30],
+                      [-30, -40, -40, -50, -50, -40, -40, -30],
+                      [-30, -40, -40, -50, -50, -40, -40, -30],
+                      [-30, -40, -40, -50, -50, -40, -40, -30],
+                      [-20, -30, -30, -40, -40, -30, -30, -20],
+                      [-10, -20, -20, -20, -20, -20, -20, -10],
+                      [20, 20,  0,  0,  0,  0, 20, 20],
+                      [20, 30, 10,  0,  0, 10, 30, 20]]
+
         super().__init__(color, case, player)
 
     def copy(self):
@@ -239,10 +292,10 @@ class King(Piece):
 
         return (copy_king)
 
-    def check_chess(self, chessboard):
+    def check_chess(self, adverse_moves):
         i, j = coordinates_to_indexes(self.x, self.y)
 
-        return ((chessboard[i][j].controlled != []) and not (self.color in chessboard[i][j].controlled))
+        return (case_in_possible_moves_list(i, j, adverse_moves))
 
     def possible_movements(self, chessboard):
         i, j = coordinates_to_indexes(self.case.x, self.case.y)
@@ -270,7 +323,7 @@ class King(Piece):
                     self.roque = True
 
             else:
-                if (j != column and (chessboard[row][j].piece != None or ((chessboard[row][j].controlled != []) and not (self.color in chessboard[row][j].controlled)))):
+                if (j != column and (chessboard[row][j].piece != None or ((len(chessboard[row][j].controlled) == 2) or (len(chessboard[row][j].controlled) == 1 and not (self.color in chessboard[row][j].controlled))))):
                     break
 
         for j in range(column+1, NB_CASE_LINE):
@@ -280,7 +333,7 @@ class King(Piece):
                     self.roque = True
 
             else:
-                if (j != column and (chessboard[row][j].piece != None or ((chessboard[row][j].controlled != []) and not (self.color in chessboard[row][j].controlled)))):
+                if (j != column and (chessboard[row][j].piece != None or ((len(chessboard[row][j].controlled) == 2) or (len(chessboard[row][j].controlled) == 1 and not (self.color in chessboard[row][j].controlled))))):
                     break
 
         return (possible_moves)

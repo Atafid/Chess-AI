@@ -49,51 +49,60 @@ def case_in_possible_moves_list(i, j, list):
 
 
 def check_controlled_case(chessboard, playerOneMoves, playerOneColor, playerTwoMoves, playerTwoColor):
-    for i in range(NB_CASE_LINE):
-        for j in range(NB_CASE_LINE):
-            chessboard[i][j].controlled = []
+    for k, l, i, j in (playerOneMoves):
+        chessboard[k][l].controlled = []
 
-            if (case_in_possible_moves_list(i, j, playerOneMoves)):
-                chessboard[i][j].controlled.append(playerOneColor)
+        if (not (playerOneColor in chessboard[k][l].controlled)):
+            chessboard[k][l].controlled.append(playerOneColor)
 
-            elif (case_in_possible_moves_list(i, j, playerTwoMoves)):
-                chessboard[i][j].controlled.append(playerTwoColor)
+    for k, l, i, j in (playerTwoMoves):
+        if (not (playerTwoColor in chessboard[k][l].controlled)):
+            chessboard[k][l].controlled.append(playerTwoColor)
 
 
-def remove_chess_moves(moves, chessboard, king_i, king_j, players, evaluate=False):
+def remove_chess_moves(moves, chessboard, king_i, king_j, adverse_player, evaluate=False):
     real_possible_moves = []
 
     # k, l are the coordinates of the case to move on and i, j the coordinates of the case where the piece comes from
     for k, l, i, j in moves:
 
-        copy_chessboard, copy_pieces = copy_case_chessboard(chessboard)
+        eaten_piece = chessboard[k][l].piece
 
-        if (copy_chessboard[k][l].piece != None):
-            copy_chessboard[k][l].piece.is_on_board = False
-        copy_chessboard[k][l].piece = copy_chessboard[i][j].piece
+        if (eaten_piece != None):
+            eaten_piece.is_on_board = False
 
-        copy_chessboard[k][l].piece.set_new_case(copy_chessboard[k][l])
+        chessboard[k][l].piece = chessboard[i][j].piece
+        chessboard[k][l].piece.set_new_case(chessboard[k][l])
 
-        copy_chessboard[i][j].piece = None
+        chessboard[i][j].piece = None
 
-        check_controlled_case(copy_chessboard, players[0].get_possible_movements(copy_chessboard, copy_pieces), players[0].color,
-                              players[1].get_possible_movements(copy_chessboard, copy_pieces), players[1].color)
+        adverse_moves = adverse_player.get_possible_movements(chessboard)
 
         if ((king_i, king_j) == (i, j)):
-            if (not (copy_chessboard[k][l].piece.check_chess(copy_chessboard))):
+            if (not (chessboard[k][l].piece.check_chess(adverse_moves))):
                 if (evaluate):
                     real_possible_moves.append(((k, l, i, j), evaluation(
-                        copy_chessboard)))
+                        chessboard)))
                 else:
                     real_possible_moves.append((k, l, i, j))
 
         else:
-            if (not (chessboard[king_i][king_j].piece.check_chess(copy_chessboard))):
+            if (not (chessboard[king_i][king_j].piece.check_chess(adverse_moves))):
                 if (evaluate):
                     real_possible_moves.append(((k, l, i, j), evaluation(
-                        copy_chessboard)))
+                        chessboard)))
                 else:
                     real_possible_moves.append((k, l, i, j))
+
+        if (eaten_piece != None):
+            eaten_piece.is_on_board = True
+
+        chessboard[i][j].piece = chessboard[k][l].piece
+        chessboard[i][j].piece.set_new_case(chessboard[i][j])
+
+        chessboard[k][l].piece = eaten_piece
+
+    adverse_player.get_possible_movements(chessboard)
 
     return (real_possible_moves)
 
@@ -119,14 +128,23 @@ def animation(piece, new_case):
     return ((x_points, y_points))
 
 
-def evaluation(chessboard):
+def evaluation(pieces, low_color):
     eva = 0
 
-    for line in chessboard:
-        for case in line:
-            if (case.piece != None):
-                eva += case.piece.value * \
-                    ((-1)**(int(case.piece.color != "white")))
+    for piece in pieces:
+        i, j = coordinates_to_indexes(piece.x, piece.y)
+
+        if (piece.color == low_color):
+            eva += piece.value[i][j]
+
+        else:
+            eva += (-1)*piece.value[NB_CASE_LINE-1-i][j]
+
+    # for line in chessboard:
+    #     for case in line:
+    #         if (case.piece != None):
+    #             eva += case.piece.value * \
+    #                 ((-1)**(int(case.piece.color != "white")))
 
     return (eva)
 

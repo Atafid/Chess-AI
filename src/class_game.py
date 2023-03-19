@@ -33,6 +33,8 @@ class Game:
         self.key_pressed = False
 
         self.movements = []
+        self.actual_player_moves = []
+        self.against_player_moves = []
 
         self.end = False
 
@@ -131,8 +133,19 @@ class Game:
         return (chessboard)
 
     def update_moves(self):
-        check_controlled_case(self.chessboard, self.players[0].get_possible_movements(self.chessboard), self.players[0].color,
-                              self.players[1].get_possible_movements(self.chessboard), self.players[1].color)
+        self.actual_player_moves = self.players[self.turn % 2].get_possible_movements(
+            self.chessboard)
+        self.against_player_moves = self.players[(
+            self.turn+1) % 2].get_possible_movements(self.chessboard)
+
+        check_controlled_case(self.chessboard, self.actual_player_moves, self.actual_player.color,
+                              self.against_player_moves, self.players[(self.turn+1) % 2].color)
+
+        for list_piece in self.players[self.turn % 2].pieces.values():
+            for piece in list_piece:
+                if (piece.is_on_board):
+                    piece.movements = remove_chess_moves(piece.movements, self.chessboard, coordinates_to_indexes(self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[0],
+                                                         coordinates_to_indexes(self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[1], self.players[(self.turn+1) % 2])
 
     def set_selected_case(self, i, j):
         self.selected_case.selected = False
@@ -173,9 +186,7 @@ class Game:
                         self.selected_piece = self.selected_case.piece
                         self.selected_piece_coordinates = self.selected_case_coordinates
 
-                        self.movements = remove_chess_moves(self.selected_case.piece.movements, self.chessboard, coordinates_to_indexes(self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[0],
-                                                            coordinates_to_indexes(
-                            self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[1], self.players)
+                        self.movements = self.selected_case.piece.movements
 
                     if (self.selected_case.possible_move_to):
                         self.move_piece(self.selected_piece,
@@ -237,11 +248,13 @@ class Game:
 
         self.turn += 1
 
+        self.actual_player = self.players[self.turn % 2]
+
         self.update_moves()
-        self.players[self.turn % 2].chess = self.players[self.turn % 2].pieces["king"][0].check_chess(
-            self.chessboard)
-        self.end = self.players[self.turn % 2].check_chess_mate(
-            self.chessboard, self.players)
+        self.actual_player.chess = self.players[self.turn % 2].pieces["king"][0].check_chess(
+            self.against_player_moves)
+        self.end = self.actual_player.check_chess_mate(
+            self.chessboard, self.players[(self.turn+1) % 2], self.actual_player_moves)
 
     def promote_pawn(self, pawn):
         self.promote_case = []
@@ -324,9 +337,7 @@ class Game:
                         self.selected_piece = case_clicked.piece
                         self.selected_piece_coordinates = (i, j)
 
-                        self.movements = remove_chess_moves(self.selected_piece.movements, self.chessboard, coordinates_to_indexes(self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[0],
-                                                            coordinates_to_indexes(
-                            self.actual_player.pieces["king"][0].x, self.actual_player.pieces["king"][0].y)[1], self.players)
+                        self.movements = self.selected_piece.movements
 
                         self.piece_floating = True
 
@@ -364,9 +375,6 @@ class Game:
             self.chessboard[i][j].piece, self.chessboard[k][l])
 
     def update(self, keys):
-        self.display()
-
-        self.actual_player = self.players[self.turn % 2]
 
         if (self.actual_player.ia):
             if (self.animation):
@@ -392,6 +400,8 @@ class Game:
             if (KEYBOARD_CONTROLL):
                 self.handle_keyboard(keys)
             self.handle_mouse()
+
+        self.display()
 
         return (self.end)
 
