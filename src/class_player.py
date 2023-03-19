@@ -12,11 +12,11 @@ class Player():
         self.chess = False
         self.ia = ia
 
-    def check_chess_mate(self, chessboard, players):
+    def check_chess_mate(self, chessboard, adverse_player, possible_moves):
         king_i, king_j = coordinates_to_indexes(
             self.pieces["king"][0].x, self.pieces["king"][0].y)
 
-        return (self.chess and remove_chess_moves(self.get_possible_movements(chessboard), chessboard, king_i, king_j, players) == [])
+        return (self.chess and remove_chess_moves(possible_moves, chessboard, king_i, king_j, adverse_player) == [])
 
     def get_possible_movements(self, chessboard, copy_piece=None):
         move_list = []
@@ -46,18 +46,18 @@ class Player():
 
         return (move_list)
 
-    def get_valide_moves(self, chessboard, players, copy_piece=None, evaluate=False):
+    def get_valide_moves(self, chessboard, adverse_player, copy_piece=None, evaluate=False):
         king_i, king_j = coordinates_to_indexes(
             self.pieces["king"][0].x, self.pieces["king"][0].y)
 
         real_possible_moves = remove_chess_moves(
-            self.get_possible_movements(chessboard, copy_piece=copy_piece), chessboard, king_i, king_j, players, evaluate=evaluate)
+            self.get_possible_movements(chessboard, copy_piece=copy_piece), chessboard, king_i, king_j, adverse_player, evaluate=evaluate)
 
         return (real_possible_moves)
 
-    def choose_move(self, chessboard, players):
+    def choose_move(self, chessboard, adverse_player):
         real_possible_moves = self.get_valide_moves(
-            chessboard, players, copy_piece=None, evaluate=True)
+            chessboard, adverse_player, copy_piece=None, evaluate=True)
 
         if (self.color == "white"):
             real_possible_moves.sort(key=second_element)
