@@ -31,35 +31,13 @@ class minMaxTree():
         # self.floors.append(actual_floor)
 
     def get_best_move(self):
-        if (self.root.player.color == "white"):
-            first_floor = self.root.child
-
-            max_eval = -inf
-            best_node = first_floor[0]
-
-            for node in first_floor:
-                actual_eval = node.get_eval()
-                if (actual_eval > max_eval):
-                    max_eval = actual_eval
-                    best_node = node
-
-        else:
-            first_floor = self.root.child
-
-            min_eval = inf
-            best_node = first_floor[0]
-
-            for node in first_floor:
-                actual_eval = node.get_eval()
-                if (actual_eval < min_eval):
-                    min_eval = actual_eval
-                    best_node = node
+        best_node = self.root.alpha_beta(-inf, inf)
 
         return (best_node.move)
 
 
 class minMaxNode():
-    def __init__(self, parent, chessboard, depth, actual_player, move, pieces):
+    def __init__(self, parent, chessboard, depth, actual_player, move, pieces, max):
         self.parent = parent
         self.child = []
 
@@ -70,13 +48,14 @@ class minMaxNode():
         self.pieces = pieces
 
         self.depth = depth
+        self.max = max
 
     def construct_child(self, against_player=None):
         if (against_player == None):
             against_player = self.parent.player
 
         moves = self.player.get_valide_moves(
-            self.chessboard, [self.player, against_player], copy_piece=self.pieces)
+            self.chessboard, against_player, copy_piece=self.pieces)
 
         for m in moves:
             k, l, i, j = m
@@ -94,41 +73,151 @@ class minMaxNode():
 
             if (self.depth+1 == DEPTH_SEARCH):
                 self.child.append(minMaxLeaf(
-                    self, copy_chessboard, (k, l, i, j)))
+                    self, copy_chessboard, (k, l, i, j), copy_pieces, against_player, not (self.max)))
 
             else:
                 self.child.append(minMaxNode(self, copy_chessboard,
-                                             self.depth+1, against_player, (k, l, i, j), copy_pieces))
+                                             self.depth+1, against_player, (k, l, i, j), copy_pieces, not (self.max)))
 
     def get_eval(self):
-        r = 0
 
         if (self.child == []):
             self.construct_child()
 
-        for node in self.child:
-            r += node.get_eval()
+        if (self.max):
+            val = -inf
 
-        return (r/len(self.child))
+            for node in self.child:
+                node_eval = node.get_eval()
+                if (val < node_eval):
+                    val = node_eval
+
+        else:
+            val = inf
+
+            for node in self.child:
+                node_eval = node.get_eval()
+                if (val > node_eval):
+                    val = node_eval
+
+        return (val)
+
+    def alpha_beta(self, alpha, beta):
+        if (self.child == []):
+            self.construct_child()
+
+        if (self.max):
+            v = -inf
+            for node in self.child:
+                v = max(v, node.alpha_beta(alpha, beta))
+
+                if (v >= beta):
+                    return (v)
+
+                alpha = max(alpha, v)
+
+        else:
+            v = inf
+            for node in self.child:
+                v = min(v, node.alpha_beta(alpha, beta))
+
+                if (alpha >= v):
+                    return (v)
+
+                beta = min(beta, v)
+
+        return (v)
 
 
 class minMaxRoot(minMaxNode):
     def __init__(self, chessboard, actual_player, against_player):
         self.against_player = against_player
         super().__init__(None, chessboard, 0, actual_player,
-                         None, flat_list_of_list(actual_player.pieces.values()))
+                         None, flat_list_of_list(actual_player.pieces.values()), False)
 
     def construct_child(self):
         super().construct_child(self.against_player)
 
+    def get_eval(self):
+        if (self.child == []):
+            self.construct_child()
+
+        best_node = None
+
+        if (self.max):
+            val = -inf
+
+            for node in self.child:
+                node_eval = node.get_eval()
+                if (val < node_eval):
+                    val = node_eval
+                    best_node = node
+
+        else:
+            val = inf
+
+            for node in self.child:
+                node_eval = node.get_eval()
+                if (val > node_eval):
+                    val = node_eval
+                    best_node = node
+
+        return (best_node)
+
+    def alpha_beta(self, alpha, beta):
+        if (self.child == []):
+            self.construct_child()
+
+        best_node = None
+
+        if (self.max):
+            v = -inf
+            for node in self.child:
+                eval = node.alpha_beta(alpha, beta)
+
+                if (v <= eval):
+                    v = eval
+                    best_node = node
+
+                if (v >= beta):
+                    return (best_node)
+
+                alpha = max(alpha, v)
+
+        else:
+            v = inf
+            for node in self.child:
+                eval = node.alpha_beta(alpha, beta)
+
+                if (v >= eval):
+                    v = eval
+                    best_node = node
+
+                if (alpha >= v):
+                    return (best_node)
+
+                beta = min(beta, v)
+
+        return (best_node)
+
 
 class minMaxLeaf(minMaxNode):
-    def __init__(self, parent, chessboard, move):
+    def __init__(self, parent, chessboard, move, pieces, actual_player, max):
         self.parent = parent
         self.chessboard = chessboard
         self.move = move
 
-        self.eval = evaluation(chessboard)
+        self.pieces = pieces
+        self.player = actual_player
+        self.max = max
+
+        if (self.max):
+            self.eval = evaluation(self.pieces, self.player.color)
+        else:
+            self.eval = evaluation(self.pieces, self.parent.player.color)
 
     def get_eval(self):
+        return (self.eval)
+
+    def alpha_beta(self, alpha, beta):
         return (self.eval)
