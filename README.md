@@ -53,11 +53,11 @@ game = Game(screen, AI=False)
 ## Screenshots
 
 <p align="center">
-	<img src="resources/img/game.JPG" width="700">
+	<img src="ressources/img/game.JPG" width="700">
 </p>
 
 <p align="center">
-	<img src="resources/img/move.PNG" width="700">
+	<img src="ressources/img/move.PNG" width="700">
 </p>
 
 
