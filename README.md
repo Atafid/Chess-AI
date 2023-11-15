@@ -13,13 +13,12 @@ This Python project implements a Chess-playing AI using the Minimax algorithm. T
 
 To install the required dependencies, run the following command:
 
-pip install -r requirements.txt
-
-css
-
 ```bash
-This will ensure that all the necessary packages are installed to run the project successfully.
+pip install -r requirements.txt
 ```
+
+This will ensure that all the necessary packages are installed to run the project successfully.
+
 
 ## How to Play
 
@@ -61,7 +60,7 @@ game = Game(screen, AI=False)
 </p>
 
 
-Enjoy playing chess against the AI! Feel free to customize and extend the project as needed. If you encounter any issues or have suggestions for improvement, please don't hesitate to reach out.
+Feel free to customize and extend the project as needed. If you encounter any issues or have suggestions for improvement, please don't hesitate to reach out.
 
 ## Credits
 
