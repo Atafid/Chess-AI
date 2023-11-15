@@ -261,12 +261,12 @@ class Game:
 
     def promote_pawn(self, pawn):
         self.promote_case = []
-        self.promote_pieces = [py.image.load("sprites/"+pawn.color+"-tower.png").convert_alpha(),
-                               py.image.load("sprites/"+pawn.color +
+        self.promote_pieces = [py.image.load("ressources/sprites/"+pawn.color+"-tower.png").convert_alpha(),
+                               py.image.load("ressources/sprites/"+pawn.color +
                                              "-knight.png").convert_alpha(),
-                               py.image.load("sprites/"+pawn.color +
+                               py.image.load("ressources/sprites/"+pawn.color +
                                              "-bishop.png").convert_alpha(),
-                               py.image.load("sprites/"+pawn.color+"-queen.png").convert_alpha()]
+                               py.image.load("ressources/sprites/"+pawn.color+"-queen.png").convert_alpha()]
         self.promoted_pawn = pawn
 
         for i in range(4):

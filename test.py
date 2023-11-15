@@ -12,12 +12,12 @@ py.init()
 screen = py.display.set_mode((512, 512))
 py.display.set_caption("test")
 
-pawn = py.image.load("sprites/white-pawn.png").convert_alpha()
+pawn = py.image.load("ressources/sprites/white-pawn.png").convert_alpha()
 
-tower = py.image.load("sprites/white-tower.png").convert_alpha()
-knight = py.image.load("sprites/white-knight.png").convert_alpha()
-bishop = py.image.load("sprites/white-bishop.png").convert_alpha()
-queen = py.image.load("sprites/white-queen.png").convert_alpha()
+tower = py.image.load("ressources/sprites/white-tower.png").convert_alpha()
+knight = py.image.load("ressources/sprites/white-knight.png").convert_alpha()
+bishop = py.image.load("ressources/sprites/white-bishop.png").convert_alpha()
+queen = py.image.load("ressources/sprites/white-queen.png").convert_alpha()
 
 pieces = [tower, knight, bishop, queen]
 

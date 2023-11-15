@@ -10,7 +10,7 @@ py.display.set_caption("Chess AI")
 
 quit = False
 
-game = Game(screen, AI=True)
+game = Game(screen, AI=False)
 
 
 while (not (quit)):

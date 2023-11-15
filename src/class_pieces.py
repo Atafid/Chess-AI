@@ -8,7 +8,7 @@ class Piece:
         self.color = color
 
         self.app = py.image.load(
-            "sprites/"+color.lower()+"-"+self.type+".png").convert_alpha()
+            "ressources/sprites/"+color.lower()+"-"+self.type+".png").convert_alpha()
         self.app = py.transform.scale(self.app, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
         self.case = case

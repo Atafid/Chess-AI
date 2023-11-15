@@ -52,8 +52,14 @@ game = Game(screen, AI=False)
 
 ## Screenshots
 
-![Chess Game Screenshot 1](path/to/screenshot1.png)
-![Chess Game Screenshot 2](path/to/screenshot2.png)
+<p align="center">
+	<img src="resources/img/game.JPG" width="700">
+</p>
+
+<p align="center">
+	<img src="resources/img/move.PNG" width="700">
+</p>
+
 
 Enjoy playing chess against the AI! Feel free to customize and extend the project as needed. If you encounter any issues or have suggestions for improvement, please don't hesitate to reach out.
 
