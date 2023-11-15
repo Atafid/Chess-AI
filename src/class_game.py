@@ -9,11 +9,14 @@ from .minmax import minMaxTree
 
 
 class Game:
-    def __init__(self, window):
+    def __init__(self, window, AI):
 
         self.players = [Player("white", False), Player("black", False)]
         self.turn = 0
         self.actual_player = self.players[0]
+        
+        #AI or not
+        self.isAI = AI
 
         self.chessboard = self.init_chessboard()
         self.update_moves()
@@ -48,7 +51,7 @@ class Game:
         chessboard = []
 
         low_player = randint(0, 1)
-        self.players[1-low_player].ia = True
+        self.players[1-low_player].ia = self.isAI
 
         for i in range(NB_CASE_LINE):
             line = []
